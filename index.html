@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML Run Code</title>
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body{
+	display: -webkit-flex;
+	display: flex;
+	flex-flow:row wrap;
+	justify-content: space-between;
+}
+.code,.view{
+    width: 50%;
+	height: 99.9vh;
+}
+.code{
+	background-color: #333;
+}
+#code{
+	padding: 2.5%;
+	background-color: #333;
+	width: 100%;
+	height: 98%;
+	resize: none;
+	color: #F8F8F8;
+	margin-top: 1%;
+}
+.view{
+	background-color: #f8f8f8;
+}
+#view{
+	border: 0;
+	background-color: #f8f8f8;
+	width: 100%;
+	height: 98vh;
+}
+</style>
+</head>
+<body id="data">
+	<div class="code">
+		<div id="code"></div>
+	</div>
+	<div class="view">
+		<iframe id="view"></iframe>
+	</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-language_tools.min.js"></script>
+<script id="HtmlTemplate" type="text/html"><!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HTML Code</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<style>
+    .imgs{
+        margin-top: 200px;
+        width:50px;
+    }
+    .t{
+        font-size:8px;
+        text-align:center;
+    }
+</style>
+</head>
+<body>
+    <div align="center">
+        <img src="/favicon.ico" class="imgs" />
+    </div>
+    <p class="t">Typing in the code editor on the left will be displayed in real time to the view area on the right ,<span style="color:red;">CTRL+S Save.</span></p>
+</body>
+</html></script>
+<script>
+var editor=false;
+ace.config.set("basePath", "https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/");
+ace.require("ace/ext/language_tools");
+function aceedit(language){
+    if(editor){
+        editor.destroy();
+        editor.container.remove();
+    }
+    editor = ace.edit("code");
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+    editor.session.setUseWrapMode(true);//切换自动换行
+    document.getElementById('code').style.fontSize='12px';//设置字体大小
+    editor.setHighlightActiveLine(false);//设置行高亮显示
+    editor.setShowPrintMargin(false);//设置打印边距可见性
+    //editor.getSession().setUseWorker(false);取消语言模式的语法检查
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/"+language);//动态设置语言模型
+    //editor.getSession().setMode("ace/mode/javascript");
+    var code = document.getElementById("code");
+    var view = document.getElementById("view");
+    editor.getSession().on ('change', function (e) {
+                 var codes=editor.getValue ();//获得输入内容
+                 view.srcdoc=codes;//写入显示区域
+                 localStorage.setItem('codes', codes);//写入缓存
+                // editor.setValue (editorValue);//设置输入内容
+                // editor.moveCursorTo (0, 0);// 移动光标至第 0 行，第 0 列
+                // editor.execCommand ('find');编辑内容搜索
+                
+            });
+}
+aceedit("html");
+var html = document.getElementById("HtmlTemplate").innerHTML;
+if(localStorage.getItem('codes') && localStorage.getItem('codes') !== html){
+    editor.insert(localStorage.getItem('codes')); //显示缓存
+}else{
+    editor.insert(html); //显示示例
+}
+function download_file(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    } else {
+        pom.click();
+    }
+}
+//监听下载事件
+document.addEventListener('keydown', function(event) {
+  // 检查是否同时按下了Ctrl键和S键
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault(); // 阻止浏览器默认的保存操作
+        // 保存文件
+        var userInput = prompt('Please enter a file name:');
+        if (userInput !== null) {
+            // 用户点击了确定按钮
+            download_file(userInput,editor.getValue ());
+        }
+    }
+});
+var dragDropArea = document.getElementById('data');
+// 阻止浏览器默认打开拖放文件的行为
+dragDropArea.addEventListener('dragover', function(event) {
+    event.preventDefault();
+});
+// 获取拖放文件的内容
+dragDropArea.addEventListener('drop', function(event) {
+    event.preventDefault();
+    var file = event.dataTransfer.files[0];
+    var reader = new FileReader();
+    var typearr = [".txt",".c",".java",".js",".php",".py",".cpp",".h",".kt","pl",".pm",".html",".css",".asp",".jsp",".lua",".sh",".rb",".go",".rs",".scala",".xml",".vb",".sql",".R",".swift"];
+  // 根据文件类型读取文件内容
+    for(var i=0; i<typearr.length; i++){
+        if(file.name.endsWith(typearr[i])){
+            reader.onload = function(event) {
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }
+    }
+    alert("This type is not supported");
+});
+</script>
+</body>
+</html>
