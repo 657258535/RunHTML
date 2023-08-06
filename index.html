@@ -153,10 +153,81 @@ dragDropArea.addEventListener('drop', function(event) {
     var file = event.dataTransfer.files[0];
     var reader = new FileReader();
     var typearr = [".txt",".c",".java",".js",".php",".py",".cpp",".h",".kt","pl",".pm",".html",".css",".asp",".jsp",".lua",".sh",".rb",".go",".rs",".scala",".xml",".vb",".sql",".R",".swift"];
-  // 根据文件类型读取文件内容
+  // 根据文件类型读取文件内容并设置相应语言模式,对常用语言做了识别
     for(var i=0; i<typearr.length; i++){
-        if(file.name.endsWith(typearr[i])){
+        if(file.name.endsWith('.txt') || file.name.endsWith('.js') || file.name.endsWith('.css')){
             reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/html");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.c') || file.name.endsWith('.cpp') || file.name.endsWith('.h')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/c");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.py')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/python");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.java') || file.name.endsWith('.jsp')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/java");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.kt')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/kotlin");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.pl') || file.name.endsWith('.pm')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/perl");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.sh')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/shell");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.rb')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/ruby");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.rs')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/rust");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith('.r')){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/r");
+            editor.insert(event.target.result);
+            };
+            reader.readAsText(file);
+            return;
+        }else if(file.name.endsWith(typearr[i])){
+            reader.onload = function(event) {
+            editor.getSession().setMode("ace/mode/"+typearr[i].slice(1));
             editor.insert(event.target.result);
             };
             reader.readAsText(file);
